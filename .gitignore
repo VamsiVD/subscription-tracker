@@ -17,14 +17,14 @@ coverage.*
 *.coverprofile
 profile.cov
 
-go.sum
-go.mod
+
 # Dependency directories (remove the comment below to include it)
 # vendor/
 postman/
 # Go workspace file
 go.work
 go.work.sum
+
 
 # env file
 .env

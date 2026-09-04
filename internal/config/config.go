@@ -12,11 +12,11 @@ type config struct {
 	DatabaseUrl string
 }
 
-func load() (*config, error) {
+func Load() (*config, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file found")
 	}
-	dbURL := os.Getenv("DATABAE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
 	if dbURL == "" {
 		return nil, fmt.Errorf("DATABASE_URL not set")
