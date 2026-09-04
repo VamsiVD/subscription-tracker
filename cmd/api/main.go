@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"log"
-	"subscription-tracker/internal/config"
-	"subscription-tracker/internal/db"
+	"subscriptionTracker/internal/config"
+	"subscriptionTracker/internal/db"
 )
 
 func main() {
