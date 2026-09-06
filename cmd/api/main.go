@@ -5,6 +5,10 @@ import (
 	"log"
 	"subscriptionTracker/internal/config"
 	"subscriptionTracker/internal/db"
+	"subscriptionTracker/internal/server"
+	"subscriptionTracker/internal/subscriptions"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -14,18 +18,20 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	pool, err := db.Connect(context.Background(), cfg.DatabaseUrl)
+	db, err := db.Connect(context.Background(), cfg.DatabaseUrl)
 
 	if err != nil {
 		log.Fatalf("error connect to database: %v", err)
 	}
 
-	defer pool.Close()
+	defer db.Close()
 
-	var version string
-	if err := pool.QueryRow(context.Background(), "SELECT version()").Scan(&version); err != nil {
-		log.Fatalf("Query failed: %v", err)
+	repo := subscriptions.NewRespository(db)
+	handler := subscriptions.NewHandler(repo)
+	r := server.NewRouter(handler)
+
+	if err := r.Run(); err != nil {
+		log.Fatalf("failed to run server: %v", err)
 	}
-	log.Println("Connected to:", version)
 
 }
