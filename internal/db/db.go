@@ -2,25 +2,14 @@ package db
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jmoiron/sqlx"
 )
 
-func Connect(ctx context.Context, databaseUrl string) (*pgxpool.Pool, error) {
-	config, err := pgxpool.ParseConfig(databaseUrl)
+func Connect(ctx context.Context, databaseUrl string) (*sqlx.DB, error) {
+	db, err := sqlx.ConnectContext(ctx, "postgres", databaseUrl)
 	if err != nil {
-		return nil, fmt.Errorf("parse error config: %w", err)
+		return nil, err
 	}
-	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeCacheDescribe
-
-	pool, err := pgxpool.NewWithConfig(ctx, config)
-
-	if err != nil {
-		return nil, fmt.Errorf("connect to database: %w", err)
-	}
-
-	return pool, nil
-
+	return db, nil
 }
