@@ -1,6 +1,6 @@
 # Subscription Tracker
 
-Small REST API for track subscription (like Netflix, gym, whatever you pay for). Write in Go, use `gin` for HTTP, `sqlx` + Postgres for db.
+Small REST API for tracking subscriptions (like Netflix, gym, whatever you pay for). Written in Go, using `gin` for HTTP, `sqlx` + Postgres for db.
 
 ## Stack
 - Go 1.27
