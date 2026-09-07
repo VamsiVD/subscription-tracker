@@ -19,6 +19,16 @@ func NewRespository(db *sqlx.DB) *Respository {
 	return &Respository{db: db}
 }
 
+func (r *Respository) Getsubscriptions(ctx context.Context, Owner string) ([]SubscriptionsResponse, error) {
+	var subs []SubscriptionsResponse
+
+	err := r.db.SelectContext(ctx, &subs,
+		`SELECT uuid, owner_id, name, type, amount, start_date, currency FROM subscriptions WHERE owner_id = $1`,
+		Owner,
+	)
+	return subs, err
+}
+
 func (r *Respository) CreateSubscription(ctx context.Context, req SubscriptionsCreateRequest) (SubscriptionsResponse, error) {
 	var sub SubscriptionsResponse
 	uuid, err := generateUuid()
@@ -33,6 +43,29 @@ func (r *Respository) CreateSubscription(ctx context.Context, req SubscriptionsC
 		uuid, req.Owner, req.Name, req.Type, req.Amount, req.StartDate, req.Currency,
 	)
 	return sub, err
+}
+
+func (r *Respository) UpdateSubscription(ctx context.Context, req SubscriptionsUpdateRequest, Uuid string) (SubscriptionsResponse, error) {
+	var sub SubscriptionsResponse
+	err := r.db.GetContext(ctx, &sub,
+		`UPDATE subscriptions 
+			 SET name = $1, type = $2, amount = $3, start_date = $4, currency = $5
+			 WHERE uuid = $6
+			 RETURNING uuid, owner_id, name, type, amount, start_date, currency`,
+		req.Name, req.Type, req.Amount, req.StartDate, req.Currency, Uuid,
+	)
+	return sub, err
+}
+
+func (r *Respository) DeleteSubscription(ctx context.Context, Uuid string) error {
+
+	_, err := r.db.ExecContext(ctx,
+		`DELETE FROM subscriptions 
+			 WHERE uuid = $1`,
+		Uuid,
+	)
+
+	return err
 }
 
 func generateUuid() (string, error) {
